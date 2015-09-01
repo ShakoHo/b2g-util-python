@@ -4,8 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
 import re
+import json
 import logging
 import argparse
 from argparse import ArgumentDefaultsHelpFormatter
@@ -26,6 +26,7 @@ class CrashReporter(object):
                                                   formatter_class=ArgumentDefaultsHelpFormatter)
         self.arg_parser.add_argument('-s', '--serial', action='store', dest='serial', default=None, help='Directs command to the device or emulator with the given serial number. Overrides ANDROID_SERIAL environment variable.')
         self.arg_parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', default=False, help='Turn on verbose output, with all the debug logger.')
+        self.arg_parser.add_argument('--log-json', action='store', dest='log_json', default=None, help='JSON output.')
 
     def prepare(self):
         '''
@@ -59,11 +60,19 @@ class CrashReporter(object):
         print('Submitted Crash Reports:\n{}\n'.format(submitted))
 
         if retcode_submitted == 0:
+            submitted_url_list = []
             print('The links of Submitted Crash Reports:')
             for line in submitted.split('\n'):
                 submmited_id = re.sub(r'\.txt\s*$', '', re.sub(r'^.+bp-', '', line))
                 submitted_url = 'https://crash-stats.mozilla.com/report/index/{}'.format(submmited_id)
+                submitted_url_list.append(submitted_url)
                 print(submitted_url)
+
+        if self.args.log_json is not None:
+            with open(self.args.log_json, 'w') as outfile:
+                result = {'PendingCrashReportsList': pending, 'SubmittedCrashReportsList': submitted,
+                          'SubmittedUrl': submitted_url_list}
+                json.dump(result, outfile, indent=4)
 
     def run(self):
         '''
