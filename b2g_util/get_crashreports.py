@@ -70,7 +70,7 @@ class CrashReporter(object):
 
         if self.args.log_json is not None:
             with open(self.args.log_json, 'w') as outfile:
-                result = {'PendingCrashReportsList': pending, 'SubmittedCrashReportsList': submitted,
+                result = {'PendingCrashReportsStdout': pending, 'SubmittedCrashReportsStdout': submitted,
                           'SubmittedUrl': submitted_url_list}
                 json.dump(result, outfile, indent=4)
 
