@@ -59,8 +59,8 @@ class CrashReporter(object):
         submitted, retcode_submitted = AdbWrapper.adb_shell('ls -al /data/b2g/mozilla/Crash\ Reports/submitted', serial=serial)
         print('Submitted Crash Reports:\n{}\n'.format(submitted))
 
+        submitted_url_list = []
         if retcode_submitted == 0:
-            submitted_url_list = []
             print('The links of Submitted Crash Reports:')
             for line in submitted.split('\n'):
                 submmited_id = re.sub(r'\.txt\s*$', '', re.sub(r'^.+bp-', '', line))
